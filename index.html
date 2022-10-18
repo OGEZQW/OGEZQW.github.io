@@ -180,62 +180,36 @@
       
     <div class="article-entry" itemprop="articleBody">
        
-  <h2 id="1-hive向量化查询报错"><a href="#1-hive向量化查询报错" class="headerlink" title="1.	hive向量化查询报错"></a>1.	hive向量化查询报错</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Runtime Error while processing row at org.apache.hadoop.hive.ql.exec.vector.VectorMapOperator.process(VectorMapOperator.java:52)</span><br></pre></td></tr></table></figure>
+  <p>[TOC]</p>
+<h2 id="hive向量化查询报错"><a href="#hive向量化查询报错" class="headerlink" title="hive向量化查询报错"></a>hive向量化查询报错</h2><h3 id="1-错误信息"><a href="#1-错误信息" class="headerlink" title="1.错误信息"></a>1.错误信息</h3><p>Runtime Error while processing row at org.apache.hadoop.hive.ql.exec.vector.VectorMapOperator.process(VectorMapOperator.java:52)</p>
+<h3 id="2-解决方案"><a href="#2-解决方案" class="headerlink" title="2.解决方案"></a>2.解决方案</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">set hive.vectorized.execution.enabled=false;</span><br><span class="line">set hive.vectorized.execution.reduce.enabled=false;</span><br></pre></td></tr></table></figure>
 
-<p>​		解决方案：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">set hive.vectorized.execution.enabled=false;</span><br><span class="line">set hive.vectorized.execution.reduce.enabled=false;</span><br></pre></td></tr></table></figure>
+<h2 id="hive包与spark不兼容报错"><a href="#hive包与spark不兼容报错" class="headerlink" title="hive包与spark不兼容报错"></a>hive包与spark不兼容报错</h2><h3 id="1-报错信息"><a href="#1-报错信息" class="headerlink" title="1.报错信息"></a>1.报错信息</h3><p>Failedto execute spark task, with exception’org.<a target="_blank" rel="noopener" href="https://so.csdn.net/so/search?q=apache&spm=1001.2101.3001.7020">apache</a>.hadoop.hive.ql.metadata.HiveException(Failed to create sparkclient.)</p>
+<h3 id="2-官方说明"><a href="#2-官方说明" class="headerlink" title="2.官方说明"></a>2.官方<a href="">说明</a></h3><h3 id="3-解决方案"><a href="#3-解决方案" class="headerlink" title="3.解决方案"></a>3.解决方案</h3><p>1.使用官方文档中相匹配的spark和hive版本<br>​		2.修改Hive中关于Spark的源码和依赖引用,并重新编译</p>
+<h2 id="hive-on-spark-资源不足报错"><a href="#hive-on-spark-资源不足报错" class="headerlink" title="hive on spark 资源不足报错"></a>hive on spark 资源不足报错</h2><h3 id="1-报错信息-1"><a href="#1-报错信息-1" class="headerlink" title="1.报错信息"></a>1.报错信息</h3><h4 id="datagrip信息"><a href="#datagrip信息" class="headerlink" title="datagrip信息"></a>datagrip信息</h4><p>org.apache.hadoop.hive.ql.parse.SemanticException:Failed to get a spark session: org.apache.hadoop.hive.ql.metadata.HiveException: Failed to create Spark client for Spark session</p>
+<p>&#x2F;&#x2F;    该报错信息可能有多种产生原因，应查看hive日志与yarn日志定位具体原因</p>
+<h4 id="hive日志信息"><a href="#hive日志信息" class="headerlink" title="hive日志信息"></a>hive日志信息</h4><p>Timed out waiting for client to connect.<br>Possible reasons include network issues , errors in remote driver or the cluster has no avaliable resources, etc.</p>
+<h4 id="yarn日志信息："><a href="#yarn日志信息：" class="headerlink" title="yarn日志信息："></a>yarn日志信息：</h4><p>Application is Actived, waiting for resources to be assigned for AM.</p>
+<h3 id="2-报错原因"><a href="#2-报错原因" class="headerlink" title="2.报错原因"></a>2.报错原因</h3><p>可基本确定是集群资源比较匮乏时使用datagrip同时运行多个任务，后开启的任务等待先开启的任务运行完释放资源，等待时间超过限定范围导致报错</p>
+<h3 id="3-解决方案-1"><a href="#3-解决方案-1" class="headerlink" title="3.解决方案"></a>3.解决方案</h3><p>1.在yarn的web页面上使用killapplication关闭之前的程序</p>
+<p>2.在命令行客户端输入</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">yarn app -list;</span><br><span class="line">yarn app -<span class="built_in">kill</span> Your_Application_Id;</span><br></pre></td></tr></table></figure>
 
-<h2 id="2-hive包与spark不兼容报错"><a href="#2-hive包与spark不兼容报错" class="headerlink" title="2.	hive包与spark不兼容报错"></a>2.	hive包与spark不兼容报错</h2><p>​		官方文档给出的[解释](<a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/Hive/Hive+on+Spark%3A+Getting+Started">Hive on Spark: Getting Started - Apache Hive - Apache Software Foundation</a>)</p>
-<p>​		<img src="https://cdn.jsdelivr.net/gh/OGEZQW/myblog@main/img/image-20221018143536628.png" alt="image-20221018143536628"></p>
-<p>​		解决方案：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1.使用官方文档中相匹配的spark和hive版本</span><br><span class="line">2.修改Hive中关于Spark的源码和依赖引用,并重新编译</span><br></pre></td></tr></table></figure>
+<h2 id="hive-mapjoin报错"><a href="#hive-mapjoin报错" class="headerlink" title="hive mapjoin报错"></a>hive mapjoin报错</h2><h3 id="1-报错信息-2"><a href="#1-报错信息-2" class="headerlink" title="1.报错信息"></a>1.报错信息</h3><h4 id="datagrip报错信息"><a href="#datagrip报错信息" class="headerlink" title="datagrip报错信息"></a>datagrip报错信息</h4><p>Spark job failed during runtime. please check stacktrace for the root cause.</p>
+<h4 id="yarn日志信息"><a href="#yarn日志信息" class="headerlink" title="yarn日志信息"></a>yarn日志信息</h4><p>Unexpected exception from MapJoinOperator</p>
+<h3 id="2-报错原因-1"><a href="#2-报错原因-1" class="headerlink" title="2.报错原因"></a>2.报错原因</h3><p>是hive mapjoin优化的bug, 不允许我们join的表其中一张为空表</p>
+<h3 id="3-解决方案-2"><a href="#3-解决方案-2" class="headerlink" title="3.解决方案"></a>3.解决方案</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set hive.mapjoin.optimized.hashtable=false;</span><br></pre></td></tr></table></figure>
 
-<h2 id="3-hive-on-spark-资源不足报错"><a href="#3-hive-on-spark-资源不足报错" class="headerlink" title="3.	hive on spark 资源不足报错"></a>3.	hive on spark 资源不足报错</h2><p>​		datagrip报错信息：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">org.apache.hadoop.hive.ql.parse.SemanticException:Failed to get a spark session: org.apache.hadoop.hive.ql.metadata.HiveException: Failed to create Spark client for Spark session</span><br><span class="line">//该报错信息可能有多种产生原因，应查看hive日志与yarn日志定位具体原因</span><br></pre></td></tr></table></figure>
+<h2 id="datagrip连接hiveserver2索引报错"><a href="#datagrip连接hiveserver2索引报错" class="headerlink" title="datagrip连接hiveserver2索引报错"></a>datagrip连接hiveserver2索引报错</h2><h3 id="1-报错信息-3"><a href="#1-报错信息-3" class="headerlink" title="1.报错信息"></a>1.报错信息</h3><p>FAILED: ParseException line 1:5 cannot recognize input near ‘show’ ‘indexes’ ‘on’ in ddl statement</p>
+<h3 id="2-报错原因-2"><a href="#2-报错原因-2" class="headerlink" title="2.报错原因"></a>2.报错原因</h3><p>datagrip每次对表进行增删操作会重新拉取元数据，作为通用的数据库连接工具它会去查询索引。hive中使用索引效果不好，在hive3.0后已去除索引功能。</p>
+<h3 id="3-解决方案-3"><a href="#3-解决方案-3" class="headerlink" title="3.解决方案"></a>3.解决方案</h3><p>不影响使用，不必理会</p>
+<h2 id="hiveserver2打开文件过多"><a href="#hiveserver2打开文件过多" class="headerlink" title="hiveserver2打开文件过多"></a>hiveserver2打开文件过多</h2><h3 id="1-报错信息-4"><a href="#1-报错信息-4" class="headerlink" title="1.报错信息"></a>1.报错信息</h3><p>too many open files</p>
+<h3 id="2-报错原因-3"><a href="#2-报错原因-3" class="headerlink" title="2.报错原因"></a>2.报错原因</h3><p>默认情况下，每次执行查询时，hiveserver2都会产生几条operation_logs文件(&#x2F;tmp&#x2F;YourUserName&#x2F;operation_logs)，用于记录本次查询的操作信息，在查询结束后，这些文件会被清理。正常情况下清理文件是先关闭对文件的引用，再删除文件，但是在hiveserver2中会先删除文件再关闭引用，这会导致无法关闭文件引用，无法清理文件。当执行的查询越来越多，operation_logs也会越积越多。</p>
+<h3 id="3-解决方案-4"><a href="#3-解决方案-4" class="headerlink" title="3.解决方案"></a>3.解决方案</h3><p>1.<del>提高操作系统对每一个进程同时打开文件的个数（对hive的限制默认是4096个文件）</del>。但是治标不治本，文件数再高总会达到上限</p>
+<p>2.在hive-site.xml增加以下配置</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">set hive.server2.logging.operation.enabled=false</span><br><span class="line">//理论上可以解决，但是因为hive存在bug，配完参数也无法生效。</span><br></pre></td></tr></table></figure>
 
-<p>​		hive日志信息：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Timed out waiting for client to connect. </span><br><span class="line">Possible reasons include network issues , errors in remote driver or the cluster has no avaliable resources, etc.</span><br></pre></td></tr></table></figure>
-
-<p>​		yarn日志信息：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Application is Actived, waiting for resources to be assigned for AM.</span><br></pre></td></tr></table></figure>
-
-<p>​		报错原因：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">可基本确定是集群资源比较匮乏时使用datagrip同时运行多个任务，后开启的任务等待先开启的任务运行完释放资源，等待时间超过限定范围导致报错</span><br></pre></td></tr></table></figure>
-
-<p>​		解决方案：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">1.在yarn的web页面上使用killapplication关闭之前的程序</span><br><span class="line">2.在命令行客户端输入</span><br><span class="line">	yarn app -list;</span><br><span class="line">	yarn app -kill Your_Application_Id</span><br></pre></td></tr></table></figure>
-
-<h2 id="4-hive-mapjoin报错"><a href="#4-hive-mapjoin报错" class="headerlink" title="4.	hive mapjoin报错"></a>4.	hive mapjoin报错</h2><p>​		datagrip报错信息：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Spark job failed during runtime. please check stacktrace for the root cause.</span><br></pre></td></tr></table></figure>
-
-<p>​		yarn stderr日志信息：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Unexpected exception from MapJoinOperator</span><br></pre></td></tr></table></figure>
-
-<p>​		报错原因：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">是hive mapjoin优化的bug, 不允许我们join的表其中一张为空表</span><br></pre></td></tr></table></figure>
-
-<p>​		解决方案：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set hive.mapjoin.optimized.hashtable=false;</span><br></pre></td></tr></table></figure>
-
-<h2 id="5-datagrip连接hiveserver2索引报错"><a href="#5-datagrip连接hiveserver2索引报错" class="headerlink" title="5.	datagrip连接hiveserver2索引报错"></a>5.	datagrip连接hiveserver2索引报错</h2><p>报错信息：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">FAILED: ParseException line 1:5 cannot recognize input near &#x27;show&#x27; &#x27;indexes&#x27; &#x27;on&#x27; in ddl statement</span><br></pre></td></tr></table></figure>
-
-<p>报错原因：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">datagrip每次对表进行增删操作会重新拉取元数据，作为通用的数据库连接工具它会去查询索引。</span><br><span class="line">hive中使用索引效果不好，在hive3.0后已去除索引功能。</span><br></pre></td></tr></table></figure>
-
-<p>解决方案：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">不影响使用，不必理会</span><br></pre></td></tr></table></figure>
-
-<h2 id="6-hiveserver2打开文件过多"><a href="#6-hiveserver2打开文件过多" class="headerlink" title="6.	hiveserver2打开文件过多"></a>6.	hiveserver2打开文件过多</h2><p>报错信息：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">too many open files</span><br></pre></td></tr></table></figure>
-
-<p>报错原因：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">默认情况下，每次执行查询时，hiveserver2都会产生几条operation_logs文件(/tmp/YourUserName/operation_logs)，用于记录本次查询的操作信息，在查询结束后，这些文件会被清理。正常情况下清理文件是先关闭对文件的引用，再删除文件，但是在hiveserver2中会先删除文件再关闭引用，这会导致无法关闭文件引用，无法清理文件。当执行的查询越来越多，operation_logs也会越积越多。</span><br></pre></td></tr></table></figure>
-
-<p>解决方案：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1. 提高操作系统对每一个进程同时打开文件的个数（对hive的限制默认是4096个文件）。但是治标不治本，文件数再高总会达到上限</span><br><span class="line">2. 在hive-site.xml中set hive.server2.logging.operation.enabled=false。理论上可以解决，但是因为hive存在bug，配完参数也无法生效。</span><br></pre></td></tr></table></figure>
-
-<p>总结：无有效解决方法，需对hive源码进行修改并<em><strong>重新编译</strong></em>，再修改解决方案2中的参数。</p>
+<h3 id="4-总结"><a href="#4-总结" class="headerlink" title="4.总结"></a>4.总结</h3><p>无有效解决方法，需对hive源码进行&#x3D;&#x3D;修改并重新编译&#x3D;&#x3D;，再修改方案2中的参数。</p>
  
       <!-- reward -->
       
