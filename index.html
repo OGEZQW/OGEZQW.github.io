@@ -207,9 +207,9 @@
 <h3 id="2-报错原因-3"><a href="#2-报错原因-3" class="headerlink" title="2.报错原因"></a>2.报错原因</h3><p>默认情况下，每次执行查询时，hiveserver2都会产生几条operation_logs文件(&#x2F;tmp&#x2F;YourUserName&#x2F;operation_logs)，用于记录本次查询的操作信息，在查询结束后，这些文件会被清理。正常情况下清理文件是先关闭对文件的引用，再删除文件，但是在hiveserver2中会先删除文件再关闭引用，这会导致无法关闭文件引用，无法清理文件。当执行的查询越来越多，operation_logs也会越积越多。</p>
 <h3 id="3-解决方案-4"><a href="#3-解决方案-4" class="headerlink" title="3.解决方案"></a>3.解决方案</h3><p>1.<del>提高操作系统对每一个进程同时打开文件的个数（对hive的限制默认是4096个文件）</del>。但是治标不治本，文件数再高总会达到上限</p>
 <p>2.在hive-site.xml增加以下配置</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">set hive.server2.logging.operation.enabled=false</span><br><span class="line">//理论上可以解决，但是因为hive存在bug，配完参数也无法生效。</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">set hive.server2.logging.operation.enabled=false</span><br><span class="line">//理论上可以解决，但是因为hive存在bug，该参数配完也无法生效。</span><br></pre></td></tr></table></figure>
 
-<h3 id="4-总结"><a href="#4-总结" class="headerlink" title="4.总结"></a>4.总结</h3><p>无有效解决方法，需对hive源码进行&#x3D;&#x3D;修改并重新编译&#x3D;&#x3D;，再修改方案2中的参数。</p>
+<h3 id="4-总结"><a href="#4-总结" class="headerlink" title="4.总结"></a>4.总结</h3><p>无有效解决方法，需对hive源码进行<em><strong>修改并重新编译</strong></em>，再修改方案2中的参数。</p>
  
       <!-- reward -->
       
